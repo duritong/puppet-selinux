@@ -1,0 +1,276 @@
+policy_module(munin,1.2.6)
+
+########################################
+#
+# Declarations
+#
+
+type munin_t alias lrrd_t;
+type munin_exec_t alias lrrd_exec_t;
+init_daemon_domain(munin_t,munin_exec_t)
+
+type munin_etc_t alias lrrd_etc_t;
+files_config_file(munin_etc_t)
+
+type munin_log_t alias lrrd_log_t;
+logging_log_file(munin_log_t)
+
+type munin_tmp_t alias lrrd_tmp_t;
+files_tmp_file(munin_tmp_t)
+
+type munin_var_lib_t alias lrrd_var_lib_t;
+files_type(munin_var_lib_t)
+
+type munin_var_run_t alias lrrd_var_run_t;
+files_pid_file(munin_var_run_t)
+
+########################################
+#
+# Local policy
+#
+
+allow munin_t self:capability { setgid setuid };
+dontaudit munin_t self:capability sys_tty_config;
+allow munin_t self:process { getsched setsched signal_perms };
+allow munin_t self:unix_stream_socket { create_stream_socket_perms connectto };
+allow munin_t self:unix_dgram_socket { create_socket_perms sendto };
+allow munin_t self:tcp_socket create_stream_socket_perms;
+allow munin_t self:udp_socket create_socket_perms;
+
+allow munin_t munin_etc_t:dir list_dir_perms;
+read_files_pattern(munin_t,munin_etc_t,munin_etc_t)
+read_lnk_files_pattern(munin_t,munin_etc_t,munin_etc_t)
+files_search_etc(munin_t)
+
+allow munin_t munin_log_t:file manage_file_perms;
+logging_log_filetrans(munin_t,munin_log_t,file)
+
+manage_dirs_pattern(munin_t,munin_tmp_t,munin_tmp_t)
+manage_files_pattern(munin_t,munin_tmp_t,munin_tmp_t)
+files_tmp_filetrans(munin_t, munin_tmp_t, { file dir })
+
+# Allow access to the munin databases
+manage_dirs_pattern(munin_t,munin_var_lib_t,munin_var_lib_t)
+manage_files_pattern(munin_t,munin_var_lib_t,munin_var_lib_t)
+manage_lnk_files_pattern(munin_t,munin_var_lib_t,munin_var_lib_t)
+files_search_var_lib(munin_t)
+
+manage_files_pattern(munin_t,munin_var_run_t,munin_var_run_t)
+manage_sock_files_pattern(munin_t,munin_var_run_t,munin_var_run_t)
+files_pid_filetrans(munin_t,munin_var_run_t,file)
+
+kernel_read_system_state(munin_t)
+kernel_read_kernel_sysctls(munin_t)
+
+corecmd_exec_bin(munin_t)
+
+corenet_non_ipsec_sendrecv(munin_t)
+corenet_tcp_sendrecv_generic_if(munin_t)
+corenet_udp_sendrecv_generic_if(munin_t)
+corenet_tcp_sendrecv_all_nodes(munin_t)
+corenet_udp_sendrecv_all_nodes(munin_t)
+corenet_tcp_sendrecv_all_ports(munin_t)
+corenet_udp_sendrecv_all_ports(munin_t)
+
+dev_read_sysfs(munin_t)
+dev_read_urand(munin_t)
+
+domain_use_interactive_fds(munin_t)
+
+files_read_etc_files(munin_t)
+files_read_etc_runtime_files(munin_t)
+files_read_usr_files(munin_t)
+
+fs_getattr_all_fs(munin_t)
+fs_search_auto_mountpoints(munin_t)
+
+libs_use_ld_so(munin_t)
+libs_use_shared_libs(munin_t)
+
+logging_send_syslog_msg(munin_t)
+
+miscfiles_read_localization(munin_t)
+
+sysnet_read_config(munin_t)
+
+userdom_dontaudit_use_unpriv_user_fds(munin_t)
+userdom_dontaudit_search_sysadm_home_dirs(munin_t)
+
+ifdef(`targeted_policy',`
+	term_dontaudit_use_unallocated_ttys(munin_t)
+	term_dontaudit_use_generic_ptys(munin_t)
+	files_dontaudit_read_root_files(munin_t)
+')
+
+optional_policy(`
+	# for accessing the output directory
+	apache_search_sys_content(munin_t)
+')
+
+optional_policy(`
+	cron_system_entry(munin_t,munin_exec_t)
+')
+
+optional_policy(`
+	nis_use_ypbind(munin_t)
+')
+
+optional_policy(`
+	seutil_sigchld_newrole(munin_t)
+')
+
+optional_policy(`
+	udev_read_db(munin_t)
+')
+
+require {
+        type default_t, fixed_disk_device_t, fsadm_exec_t,ifconfig_exec_t,inaddr_any_node_t,port_t,proc_xen_t;
+		type shell_exec_t, sysadm_home_t, sysctl_fs_t,sysctl_net_t, run_init_t;
+		type proc_net_t, crond_t, getty_t, kernel_t, mtrr_device_t, newrole_t, proc_mdstat_t, sshd_t, staff_t, sysadm_screen_t;
+		type sysadm_t, sysctl_irq_t, udev_t;
+}
+
+# immerda hinzu
+allow munin_t default_t:dir getattr; # df auf /
+allow munin_t fixed_disk_device_t:blk_file { getattr ioctl };
+allow munin_t fsadm_exec_t:file { execute execute_no_trans getattr read };
+allow munin_t ifconfig_exec_t:file { execute execute_no_trans getattr read };
+allow munin_t inaddr_any_node_t:tcp_socket node_bind;
+allow munin_t initrc_t:unix_stream_socket connectto;
+allow munin_t munin_exec_t:file execute_no_trans;
+allow munin_t self:capability ipc_lock;
+allow munin_t self:fifo_file { getattr ioctl read write };
+allow munin_t port_t:tcp_socket name_bind;
+allow munin_t proc_xen_t:dir search;
+allow munin_t proc_xen_t:file { ioctl read write };
+allow munin_t shell_exec_t:file { execute execute_no_trans getattr read };
+dontaudit munin_t sysadm_home_t:dir getattr;
+allow munin_t sysctl_fs_t:dir search;
+allow munin_t sysctl_fs_t:file { getattr ioctl read };
+allow munin_t sysctl_net_t:dir search;
+allow munin_t sysctl_net_t:file { getattr ioctl read };
+allow munin_t tmpfs_t:dir getattr;
+allow munin_t var_log_t:file { getattr ioctl setattr };
+allow munin_t var_run_t:sock_file write;
+#
+allow initrc_t munin_var_run_t:dir search;
+allow munin_t self:capability dac_override;
+allow munin_t var_log_t:file append;
+allow run_init_t etc_runtime_t:file { getattr read };
+
+allow munin_t proc_net_t:dir { getattr search };
+allow munin_t proc_net_t:file { getattr ioctl read };
+allow munin_t munin_exec_t:lnk_file read;
+allow munin_t munin_log_t:file { execute execute_no_trans };
+
+dontaudit munin_t crond_t:dir getattr;
+dontaudit munin_t getty_t:dir getattr;
+dontaudit munin_t init_t:dir getattr;
+dontaudit munin_t initrc_t:dir getattr;
+dontaudit munin_t kernel_t:dir getattr;
+dontaudit munin_t mtrr_device_t:file getattr;
+dontaudit munin_t newrole_t:dir getattr;
+dontaudit munin_t proc_mdstat_t:file getattr;
+dontaudit munin_t proc_xen_t:dir getattr;
+dontaudit munin_t sshd_t:dir getattr;
+dontaudit munin_t staff_t:dir getattr;
+dontaudit munin_t sysadm_screen_t:dir getattr;
+dontaudit munin_t sysadm_t:dir getattr;
+dontaudit munin_t sysctl_irq_t:dir getattr;
+dontaudit munin_t sysctl_t:file getattr;
+dontaudit munin_t syslogd_t:dir getattr;
+dontaudit munin_t udev_t:dir getattr;
+
+require {
+	type node_t, proc_kcore_t;
+}
+# noch mehr .. bei munin-neustart
+allow munin_t bin_t:dir getattr;
+allow munin_t munin_exec_t:file { entrypoint ioctl };
+allow munin_t self:tcp_socket { bind create setopt };
+allow munin_t netif_t:netif { udp_recv udp_send };
+allow munin_t node_t:node { udp_recv udp_send };
+allow munin_t port_t:tcp_socket name_bind;
+allow munin_t var_log_t:file { getattr ioctl };
+
+
+# spezialfall:
+#allow munin_t fixed_disk_device_t:blk_file { read write };
+storage_raw_read_fixed_disk(munin_t)
+storage_raw_write_fixed_disk(munin_t)
+
+# fuer xen-cpu
+allow munin_t var_run_t:sock_file getattr;
+allow munin_t proc_kcore_t:file getattr;
+require {
+	type xenstored_t, xenstored_var_run_t;
+}
+allow munin_t xenstored_t:unix_stream_socket connectto;
+allow munin_t xenstored_var_run_t:dir search;
+allow munin_t xenstored_var_run_t:sock_file { getattr write };
+
+# kernel 2.6.20.20 boot
+require {
+	type tty_device_t,xen_image_t,xenconsoled_t, xend_t,xend_var_run_t,xm_exec_t;
+}
+allow munin_t crond_t:dir search;
+allow munin_t crond_t:file read;
+allow munin_t getty_t:dir search;
+allow munin_t getty_t:file read;
+allow munin_t init_t:dir search;
+allow munin_t init_t:file read;
+allow munin_t kernel_t:dir search;
+allow munin_t kernel_t:file read;
+allow munin_t sshd_t:dir search;
+allow munin_t sshd_t:file read;
+allow munin_t syslogd_t:dir search;
+allow munin_t syslogd_t:file read;
+allow munin_t tty_device_t:chr_file getattr;
+allow munin_t udev_t:dir search;
+allow munin_t udev_t:file read;
+allow munin_t xen_image_t:dir {  getattr };
+allow munin_t xenconsoled_t:dir { getattr search };
+allow munin_t xenconsoled_t:file read;
+allow munin_t xend_t:dir { getattr search };
+allow munin_t xend_t:file read;
+allow munin_t xend_t:unix_stream_socket connectto;
+allow munin_t xend_var_run_t:dir search;
+allow munin_t xend_var_run_t:sock_file write;
+allow munin_t xenstored_t:dir { getattr search };
+allow munin_t xenstored_t:file read;
+allow munin_t xm_exec_t:file { execute execute_no_trans getattr ioctl read };
+allow staff_t sysadm_home_t:file read;
+
+# div
+require {
+	type portage_t, portage_t.merge;
+}
+allow munin_t portage_t:dir getattr;
+
+# 
+require {
+	type sysadm_devpts_t;
+}
+allow munin_t self:capability sys_ptrace;
+allow munin_t newrole_t:dir search;
+allow munin_t newrole_t:file read;
+allow munin_t newrole_t:lnk_file read;
+allow munin_t newrole_t:process ptrace;
+allow munin_t staff_t:dir search;
+allow munin_t staff_t:file read;
+allow munin_t staff_t:lnk_file read;
+allow munin_t staff_t:process ptrace;
+allow munin_t sysadm_devpts_t:chr_file getattr;
+allow munin_t sysadm_screen_t:dir search;
+allow munin_t sysadm_screen_t:file read;
+allow munin_t sysadm_screen_t:lnk_file read;
+allow munin_t sysadm_screen_t:process ptrace;
+allow munin_t sysadm_t:dir search;
+allow munin_t sysadm_t:file read;
+allow munin_t sysadm_t:lnk_file read;
+allow munin_t sysadm_t:process ptrace;
+	
+selinux_get_enforce_mode(munin_t)
+
+require { type sysadm_tmp_t; }
+allow munin_t sysadm_tmp_t:file { getattr ioctl read write };

@@ -1,0 +1,12 @@
+/etc/munin(/.*)?				gen_context(system_u:object_r:munin_etc_t,s0)
+
+/usr/bin/munin-.*		--	gen_context(system_u:object_r:munin_exec_t,s0)
+/usr/sbin/munin-.*		--	gen_context(system_u:object_r:munin_exec_t,s0)
+/usr/libexec/munin/munin-.*		--	gen_context(system_u:object_r:munin_exec_t,s0)
+/usr/libexec/munin/plugins/.*	--	gen_context(system_u:object_r:munin_exec_t,s0)
+
+/var/lib/munin(/.*)?			gen_context(system_u:object_r:munin_var_lib_t,s0)
+/var/log/munin.*			--	gen_context(system_u:object_r:munin_log_t,s0)
+/var/run/munin(/.*)?			gen_context(system_u:object_r:munin_var_run_t,s0)
+/var/www/munin(/.*)?			gen_context(system_u:object_r:munin_var_lib_t,s0)
+/var/www/localhost/htdocs/munin(/.*)?			gen_context(system_u:object_r:munin_var_lib_t,s0)

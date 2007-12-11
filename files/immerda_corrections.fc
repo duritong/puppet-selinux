@@ -1,0 +1,6 @@
+# da dies ein default_t link war, und dadurch div. rules falsch kommen.
+
+/lib 		gen_context(system_u:object_r:lib_t,s0)
+
+#/usr/bin/ruby18              --      gen_context(system_u:object_r:unconfined_exec_t,s0)
+/usr/bin/puppetd              --      gen_context(system_u:object_r:unconfined_exec_t,s0)

@@ -1,0 +1,397 @@
+
+## <summary>policy for puppet</summary>
+
+########################################
+## <summary>
+##	Execute a domain transition to run puppet.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`puppet_domtrans',`
+	gen_require(`
+		type puppet_t;
+                type puppet_exec_t;
+	')
+
+	domtrans_pattern($1,puppet_exec_t,puppet_t)
+')
+
+
+########################################
+## <summary>
+##	Execute puppet server in the puppet domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	The type of the process performing this action.
+##	</summary>
+## </param>
+#
+interface(`puppet_script_domtrans',`
+	gen_require(`
+		type puppet_script_exec_t;
+	')
+
+	domtrans_pattern($1,puppet_script_exec_t)
+')
+
+########################################
+## <summary>
+##	Do not audit attempts to read, 
+##	puppet tmp files
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain to not audit.
+##	</summary>
+## </param>
+#
+interface(`puppet_dontaudit_read_tmp_files',`
+	gen_require(`
+		type puppet_tmp_t;
+	')
+
+	dontaudit $1 puppet_tmp_t:file r_file_perms;
+')
+
+########################################
+## <summary>
+##	Allow domain to read, puppet tmp files
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain to not audit.
+##	</summary>
+## </param>
+#
+interface(`puppet_read_tmp_files',`
+	gen_require(`
+		type puppet_tmp_t;
+	')
+
+	allow $1 puppet_tmp_t:file r_file_perms;
+')
+
+########################################
+## <summary>
+##	Allow domain to manage puppet tmp files
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain to not audit.
+##	</summary>
+## </param>
+#
+interface(`puppet_manage_tmp',`
+	gen_require(`
+		type puppet_tmp_t;
+	')
+
+         manage_dir_perms($1,puppet_tmp_t,puppet_tmp_t)
+         manage_file_perms($1,puppet_tmp_t,puppet_tmp_t)
+         manage_lnk_file_perms($1,puppet_tmp_t,puppet_tmp_t)
+')
+
+########################################
+## <summary>
+##	Search puppet rw directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_search_rw_dir',`
+	gen_require(`
+		type puppet_rw_t;
+	')
+
+	allow $1 puppet_rw_t:dir search_dir_perms;
+	files_search_rw($1)
+')
+
+########################################
+## <summary>
+##	Read puppet rw files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_read_rw_files',`
+	gen_require(`
+		type puppet_rw_t;
+	')
+
+	allow $1 puppet_rw_t:file r_file_perms;
+	allow $1 puppet_rw_t:dir list_dir_perms;
+	files_search_rw($1)
+')
+
+########################################
+## <summary>
+##	Create, read, write, and delete
+##	puppet rw files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_manage_rw_files',`
+	gen_require(`
+		type puppet_rw_t;
+	')
+
+	allow $1 puppet_rw_t:file manage_file_perms;
+	allow $1 puppet_rw_t:dir rw_dir_perms;
+')
+
+########################################
+## <summary>
+##	Manage puppet rw files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_manage_rw',`
+	gen_require(`
+		type puppet_rw_t;
+	')
+
+         manage_dir_perms($1,puppet_rw_t,puppet_rw_t)
+         manage_file_perms($1,puppet_rw_t,puppet_rw_t)
+         manage_lnk_file_perms($1,puppet_rw_t,puppet_rw_t)
+')
+
+
+########################################
+## <summary>
+##	Read puppet PID files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_read_pid_files',`
+	gen_require(`
+		type puppet_var_run_t;
+	')
+
+	files_search_pids($1)
+	allow $1 puppet_var_run_t:file r_file_perms;
+')
+
+########################################
+## <summary>
+##	Manage puppet var_run files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_manage_var_run',`
+	gen_require(`
+		type puppet_var_run_t;
+	')
+
+         manage_dir_perms($1,puppet_var_run_t,puppet_var_run_t)
+         manage_file_perms($1,puppet_var_run_t,puppet_var_run_t)
+         manage_lnk_file_perms($1,puppet_var_run_t,puppet_var_run_t)
+')
+
+
+########################################
+## <summary>
+##	Search puppet lib directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_search_lib',`
+	gen_require(`
+		type puppet_var_lib_t;
+	')
+
+	allow $1 puppet_var_lib_t:dir search_dir_perms;
+	files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Read puppet lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_read_lib_files',`
+	gen_require(`
+		type puppet_var_lib_t;
+	')
+
+	allow $1 puppet_var_lib_t:file r_file_perms;
+	allow $1 puppet_var_lib_t:dir list_dir_perms;
+	files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Create, read, write, and delete
+##	puppet lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_manage_lib_files',`
+	gen_require(`
+		type puppet_var_lib_t;
+	')
+
+	allow $1 puppet_var_lib_t:file manage_file_perms;
+	allow $1 puppet_var_lib_t:dir rw_dir_perms;
+	files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Manage puppet var_lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`puppet_manage_var_lib',`
+	gen_require(`
+		type puppet_var_lib_t;
+	')
+
+         manage_dir_perms($1,puppet_var_lib_t,puppet_var_lib_t)
+         manage_file_perms($1,puppet_var_lib_t,puppet_var_lib_t)
+         manage_lnk_file_perms($1,puppet_var_lib_t,puppet_var_lib_t)
+')
+
+
+########################################
+## <summary>
+##	All of the rules required to administrate an puppet environment
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix of the domain. Example, user would be
+##	the prefix for the uder_t domain.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	The role to be allowed to manage the puppet domain.
+##	</summary>
+## </param>
+## <rolecap/>
+#
+interface(`puppet_admin',`
+	gen_require(`
+		type puppet_t;
+	')
+
+	#allow $2 puppet_t:process { ptrace signal_perms getattr };
+	read_files_pattern($2, puppet_t, puppet_t)
+	        
+
+	# Allow $1 to restart the apache service
+	puppet_script_domtrans($2)
+	domain_system_change_exemption($2)
+	role_transition $3 puppet_script_exec_t system_r;
+	allow $3 system_r;
+
+	puppet_manage_tmp($2)
+
+	puppet_manage_rw($2)
+
+	puppet_manage_var_run($2)
+
+	puppet_manage_var_lib($2)
+
+')
+
+#################### ist erst in der neusten policy:
+interface(`init_script_type',`
+	gen_require(`
+		#type initrc_t;
+		type run_init_t;
+	#attribute initscript;
+	')
+
+	#typeattribute $1 initscript;
+	domain_entry_file(run_init_t,$1)
+	#domain_entry_file(initrc_t,$1)
+
+')
+
+interface(`corenet_port',`
+        gen_require(`
+                attribute port_type;
+        ')
+
+        typeattribute $1 port_type;
+')
+interface(`corenet_all_recvfrom_unlabeled',`
+        kernel_tcp_recvfrom_unlabeled($1)
+        kernel_udp_recvfrom_unlabeled($1)
+        kernel_raw_recvfrom_unlabeled($1)
+
+        # XXX - at some point the oubound/send access check will be removed
+        # but for right now we need to keep this in place so as not to break
+        # older systems
+        kernel_sendrecv_unlabeled_association($1)
+')
+        
+
+####### immerda
+
+interface(`puppet_allow_getattr_search_fread',`
+    gen_require(`
+        type puppet_t;
+    ')
+	allow puppet_t $1:dir { getattr search };
+	allow puppet_t $1:file read;
+')
+
+interface(`puppet_lnkread_ptrace',`
+    gen_require(`
+        type puppet_t;
+    ')
+	allow puppet_t $1:lnk_file read;
+	allow puppet_t $1:process ptrace;
+')
+
