@@ -52,14 +52,14 @@ class selinux_module {
 	define the_three_selinux_policy_files () {
 		$dir = "/var/lib/puppet/modules/selinux"
 		file {
-                        "${dir}/${name}.if":
-				source => "puppet://$servername/selinux/${name}.if",
+                        "${dir}/${name}.te":
+				source => "puppet://$servername/selinux/${name}.te",
                                 mode => 0600, owner => root, group => root,
                                 notify => Exec["make"];
 		}
 		file {
-                        "${dir}/${name}.te":
-				source => "puppet://$servername/selinux/${name}.te",
+                        "${dir}/${name}.fc":
+				source => "puppet://$servername/selinux/${name}.fc",
                                 mode => 0600, owner => root, group => root,
                                 notify => Exec["make"];
 		}
