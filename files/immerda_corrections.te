@@ -1,4 +1,4 @@
-policy_module(immerda_corrections,1.4.31)
+policy_module(immerda_corrections,1.4.32)
 
 require {
 	type initrc_t,proc_xen_t;
@@ -198,8 +198,12 @@ allow initrc_t crond_t:fifo_file read;
 # cron
 require { type crond_tmp_t; }
 allow system_crond_t crond_tmp_t:file unlink;
+# aide
+allow system_crond_t var_lib_t:file { read write };
 
 # selinux
 # update module (semodule -u)
 require { type selinux_config_t; }
 allow semanage_t selinux_config_t:dir { rename rmdir };
+
+
