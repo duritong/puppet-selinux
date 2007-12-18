@@ -1,4 +1,4 @@
-policy_module(immerda_corrections,1.4.32)
+policy_module(immerda_corrections,1.4.33)
 
 require {
 	type initrc_t,proc_xen_t;
@@ -199,8 +199,18 @@ allow initrc_t crond_t:fifo_file read;
 require { type crond_tmp_t; }
 allow system_crond_t crond_tmp_t:file unlink;
 # aide
+require { type crack_db_t, var_lib_t; }
 allow system_crond_t crack_db_t:file read;
 allow system_crond_t var_lib_t:file { ioctl lock read write };
+
+# aide
+require { type modules_dep_t, modules_object_t, udev_tbl_t; }
+allow system_crond_t device_t:chr_file getattr;
+allow system_crond_t device_t:file read;
+allow system_crond_t modules_dep_t:file read;
+allow system_crond_t modules_object_t:file read;
+allow system_crond_t modules_object_t:lnk_file read;
+allow system_crond_t udev_tbl_t:file read;
 
 # selinux
 # update module (semodule -u)
