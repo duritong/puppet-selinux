@@ -1,4 +1,4 @@
-policy_module(immerda_corrections,1.4.33)
+policy_module(immerda_corrections,1.4.34)
 
 require {
 	type initrc_t,proc_xen_t;
@@ -217,4 +217,11 @@ allow system_crond_t udev_tbl_t:file read;
 require { type selinux_config_t; }
 allow semanage_t selinux_config_t:dir { rename rmdir };
 
+# boot 071221
+allow initrc_t usr_t:file execute;
+allow initrc_t var_lib_t:file { execute execute_no_trans };
+allow mount_t unlabeled_t:filesystem { mount };
+allow munin_t unlabeled_t:dir getattr;
+allow munin_t unlabeled_t:filesystem getattr;
+allow sysadm_t unlabeled_t:filesystem getattr;
 
