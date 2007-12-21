@@ -14,13 +14,7 @@ class selinux {
 
 define selinux::module () {
 
-    file { "/etc/selinux/local/$name":
-        ensure => directory,
-        owner  => "root",
-        group  => "root",
-        mode   => "0750",
-    }
-    file { "/etc/selinux/local/$name/Makefile":
+    file { "/etc/selinux/local/Makefile":
         ensure  => present,
         owner   => "root",
         group   => "root",
@@ -28,12 +22,26 @@ define selinux::module () {
 	source => "puppet://$servername/selinux/Makefile",
     }
 
-    exec { "SELinux-$name-Update":
-                command         => "/etc/selinux/local/$name/Makefile",
-                refreshonly => true,
-                require     => File["/etc/selinux/local/$name/Makefile"],
-                subscribe       => File["/etc/selinux/local/$name/$name.te"],
-    }
+#    file { "/etc/selinux/local/$name":
+#        ensure => directory,
+#        owner  => "root",
+#        group  => "root",
+#        mode   => "0750",
+#    }
+#    file { "/etc/selinux/local/$name/Makefile":
+#        ensure  => present,
+#        owner   => "root",
+#        group   => "root",
+#        mode    => "0750",
+#	source => "puppet://$servername/selinux/Makefile",
+#    }
+#
+#    exec { "SELinux-$name-Update":
+#                command         => "/etc/selinux/local/$name/Makefile",
+#                refreshonly => true,
+#                require     => File["/etc/selinux/local/$name/Makefile"],
+#                subscribe       => File["/etc/selinux/local/$name/$name.te"],
+#    }
 }
 
 #	file {
