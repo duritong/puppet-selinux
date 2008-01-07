@@ -35,7 +35,14 @@ define selinux::module () {
         mode    => "0750",
 	source => "puppet://$servername/selinux/Makefile",
     }
-    
+
+    file { "/etc/selinux/local/$name/$name.te": 
+	ensure => file, 
+	owner => root, 
+	group => root, 
+	mode => 640,
+        source => "puppet://$servername/local/selinux/$name.te",
+    }
 
     exec { "SELinux-$name-Update":
                 command         => "/etc/selinux/local/$name/Makefile",
