@@ -10,17 +10,32 @@ class selinux {
         group  => "root",
         mode   => "0750",
     }
+
+    file { '/usr/local/bin/s0':
+        ensure => absent,
+    }
+    file { '/usr/local/bin/s1':
+        ensure => absent,
+    }
+
+    file { '/usr/local/sbin/s0':
+        owner => "root",
+        group => "0",
+        mode  => 755,
+        ensure => present,
+	source => "puppet://$servername/selinux/s0",
+    }
+    file { '/usr/local/sbin/s1':
+        owner => "root",
+        group => "0",
+        mode  => 755,
+        ensure => present,
+	source => "puppet://$servername/selinux/s1",
+    }
+
 }
 
 define selinux::module () {
-
-#    file { "/etc/selinux/local/Makefile":
-#        ensure  => present,
-#        owner   => "root",
-#        group   => "root",
-#        mode    => "0750",
-#	source => "puppet://$servername/selinux/Makefile",
-#    }
 
     file { "/etc/selinux/local/$name":
         ensure => directory,
@@ -68,31 +83,4 @@ define selinux::module () {
     }
 
 }
-
-#	define the_three_selinux_policy_files () {
-#		$dir = "/var/lib/puppet/modules/selinux"
-#		file {
-#                        "${dir}/${name}.te":
-#				source => "puppet://$servername/selinux/${name}.te",
-#                                mode => 0600, owner => root, group => root,
-#                                notify => Exec["make"];
-#		}
-#		file {
-#                        "${dir}/${name}.fc":
-#				source => "puppet://$servername/selinux/${name}.fc",
-#                                mode => 0600, owner => root, group => root,
-#                                notify => Exec["make"];
-#		}
-#		file {
-#                        "${dir}/${name}.if":
-#				source => "puppet://$servername/selinux/${name}.if",
-#                                mode => 0600, owner => root, group => root,
-#                                notify => Exec["make"];
-#		}
-#	}
-#}
-#
-#class selinux_module_unconfined inherits selinux_module {
-#	the_three_selinux_policy_files{ unconfined: }
-#}
 

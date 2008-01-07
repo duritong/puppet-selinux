@@ -1,0 +1,15 @@
+echo -n "enforcing was: "
+cat /selinux/enforce
+echo
+if [ `/usr/bin/id | /bin/grep sysadm_r | /usr/bin/wc -l` -gt 0 ] ; then
+        # if /etc/shadow has wrong permissions.. we have a big problem:
+#       /usr/sbin/setfiles /etc/security/selinux/src/policy/file_contexts/file_contexts /etc
+        # now it should be safe to enforce ...
+        /usr/sbin/setenforce 1
+else
+        echo "YOU ARE NOT SYSADM_R: not changeing enforcement mode (please do 'newrole -r sysadm_r')"
+fi
+echo -n "enforcing is now: "
+cat /selinux/enforce
+echo
+
