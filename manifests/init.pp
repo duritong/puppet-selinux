@@ -33,6 +33,11 @@ class selinux {
 	source => "puppet://$servername/selinux/s1",
     }
 
+    class deenforce {
+	Exec { path => "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" }
+	exec { "/usr/local/sbin/s0": }
+    }
+
 }
 
 define selinux::module () {
