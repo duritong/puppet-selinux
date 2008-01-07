@@ -61,17 +61,12 @@ define selinux::module () {
     }
 
     exec { "SELinux-$name-Update":
-                command         => "/usr/bin/make -C /etc/selinux/local/$name -f /etc/selinux/local/$name/Makefile",
+                command         => "/usr/bin/make -C /etc/selinux/local/$name -f /etc/selinux/local/$name/Makefile load",
                 refreshonly => true,
                 require     => File["/etc/selinux/local/$name/Makefile"],
                 subscribe       => File["/etc/selinux/local/$name/$name.te"],
     }
 
-#    exec { "SELinux-$name-loadwithsemodule":
-#                command         => "/usr/sbin/semodule -i /etc/selinux/local/$name/$name.pp",
-#                refreshonly => true,
-#                subscribe       => File["/etc/selinux/local/$name/$name.pp"],
-#    }
 }
 
 #	define the_three_selinux_policy_files () {
