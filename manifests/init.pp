@@ -37,12 +37,12 @@ define selinux::module () {
     }
     
 
-#    exec { "SELinux-$name-Update":
-#                command         => "/etc/selinux/local/$name/Makefile",
-#                refreshonly => true,
-#                require     => File["/etc/selinux/local/$name/Makefile"],
-#                subscribe       => File["/etc/selinux/local/$name/$name.te"],
-#    }
+    exec { "SELinux-$name-Update":
+                command         => "/etc/selinux/local/$name/Makefile",
+                refreshonly => true,
+                require     => File["/etc/selinux/local/$name/Makefile"],
+                subscribe       => File["/etc/selinux/local/$name/$name.te"],
+    }
 }
 
 #	file {
