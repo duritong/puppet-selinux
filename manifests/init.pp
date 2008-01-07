@@ -44,33 +44,36 @@ define selinux::module () {
         source => "puppet://$servername/local/selinux/$name.te",
     }
 
+    file { "/etc/selinux/local/$name/$name.fc": 
+	ensure => file, 
+	owner => root, 
+	group => root, 
+	mode => 640,
+        source => "puppet://$servername/local/selinux/$name.fc",
+    }
+
+    file { "/etc/selinux/local/$name/$name.if": 
+	ensure => file, 
+	owner => root, 
+	group => root, 
+	mode => 640,
+        source => "puppet://$servername/local/selinux/$name.if",
+    }
+
     exec { "SELinux-$name-Update":
                 command         => "/usr/bin/make -C /etc/selinux/local/$name -f /etc/selinux/local/$name/Makefile",
                 refreshonly => true,
                 require     => File["/etc/selinux/local/$name/Makefile"],
                 subscribe       => File["/etc/selinux/local/$name/$name.te"],
     }
+
+    exec { "SELinux-$name-loadwithsemodule":
+                command         => "/usr/sbin/semodule -i /etc/selinux/local/$name/$name.pp",
+                refreshonly => true,
+                subscribe       => File["/etc/selinux/local/$name/$name.pp"],
+    }
 }
 
-#	file {
-#                "/var/lib/puppet/modules/selinux":
-#                        ensure => directory,
-#                        force => true,
-#                        mode => 0755, owner => root, group => root;
-#        }
-#
-#	file {
-#		"/var/lib/puppet/modules/selinux/Makefile":
-#			ensure => file,
-#			source => "puppet://$servername/selinux/Makefile",
-#                        mode => 0755, owner => root, group => root;
-#	}
-#
-#	exec { "make": 
-#		alias => "make",
-#    		cwd => "/var/lib/puppet/modules/selinux";
-#	}
-#
 #	define the_three_selinux_policy_files () {
 #		$dir = "/var/lib/puppet/modules/selinux"
 #		file {
