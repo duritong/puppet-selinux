@@ -14,13 +14,13 @@ class selinux {
 
 define selinux::module () {
 
-    file { "/etc/selinux/local/Makefile":
-        ensure  => present,
-        owner   => "root",
-        group   => "root",
-        mode    => "0750",
-	source => "puppet://$servername/selinux/Makefile",
-    }
+#    file { "/etc/selinux/local/Makefile":
+#        ensure  => present,
+#        owner   => "root",
+#        group   => "root",
+#        mode    => "0750",
+#	source => "puppet://$servername/selinux/Makefile",
+#    }
 
     file { "/etc/selinux/local/$name":
         ensure => directory,
