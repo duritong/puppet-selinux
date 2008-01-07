@@ -22,20 +22,21 @@ define selinux::module () {
 	source => "puppet://$servername/selinux/Makefile",
     }
 
-#    file { "/etc/selinux/local/$name":
-#        ensure => directory,
-#        owner  => "root",
-#        group  => "root",
-#        mode   => "0750",
-#    }
-#    file { "/etc/selinux/local/$name/Makefile":
-#        ensure  => present,
-#        owner   => "root",
-#        group   => "root",
-#        mode    => "0750",
-#	source => "puppet://$servername/selinux/Makefile",
-#    }
-#
+    file { "/etc/selinux/local/$name":
+        ensure => directory,
+        owner  => "root",
+        group  => "root",
+        mode   => "0750",
+    }
+    file { "/etc/selinux/local/$name/Makefile":
+        ensure  => present,
+        owner   => "root",
+        group   => "root",
+        mode    => "0750",
+	source => "puppet://$servername/selinux/Makefile",
+    }
+    
+
 #    exec { "SELinux-$name-Update":
 #                command         => "/etc/selinux/local/$name/Makefile",
 #                refreshonly => true,
