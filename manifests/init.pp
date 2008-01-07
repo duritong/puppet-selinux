@@ -67,11 +67,11 @@ define selinux::module () {
                 subscribe       => File["/etc/selinux/local/$name/$name.te"],
     }
 
-    exec { "SELinux-$name-loadwithsemodule":
-                command         => "/usr/sbin/semodule -i /etc/selinux/local/$name/$name.pp",
-                refreshonly => true,
-                subscribe       => File["/etc/selinux/local/$name/$name.pp"],
-    }
+#    exec { "SELinux-$name-loadwithsemodule":
+#                command         => "/usr/sbin/semodule -i /etc/selinux/local/$name/$name.pp",
+#                refreshonly => true,
+#                subscribe       => File["/etc/selinux/local/$name/$name.pp"],
+#    }
 }
 
 #	define the_three_selinux_policy_files () {
