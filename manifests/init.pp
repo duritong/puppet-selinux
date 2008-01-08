@@ -45,8 +45,7 @@ define selinux::module () {
     file { "/etc/selinux/local/$name":
         ensure => directory,
         owner  => "root",
-        group  => "root",
-        mode   => "0750",
+        group  => "root", mode   => "0750",
     }
     file { "/etc/selinux/local/$name/Makefile":
         ensure  => present,
@@ -89,3 +88,20 @@ define selinux::module () {
 
 }
 
+# location = location of the pp (eg. /usr/share/selinux/strict/logrotate.pp)
+define selinux::loadmodule ($location) {
+	# installs the module, if it is no already installed
+    exec { "SELinux-$name-Install":
+                command     => "/usr/sbin/semodule -i $location",
+		creates	    => "/etc/selinux/strict/modules/active/modules/$name.pp",
+                require     => File[$location]
+    }
+	# updates, if $location is refreshed and module already active
+    exec { "SELinux-$name-Update":
+                command     => "/usr/sbin/semodule -u $location",
+                subscribe   => File[$location],
+                refreshonly => true,
+                require     => [ File["/etc/selinux/strict/modules/active/modules/$name.pp"], File[$location] ]
+    }
+
+}
