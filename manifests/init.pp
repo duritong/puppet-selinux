@@ -60,7 +60,7 @@ define selinux::module () {
 	owner => root, 
 	group => root, 
 	mode => 640,
-        source => "puppet://$servername/local/selinux/$name.te",
+        source => "puppet://$servername/dist/selinux/$name.te",
     }
 
     file { "/etc/selinux/local/$name/$name.fc": 
@@ -68,7 +68,7 @@ define selinux::module () {
 	owner => root, 
 	group => root, 
 	mode => 640,
-        source => "puppet://$servername/local/selinux/$name.fc",
+        source => "puppet://$servername/dist/selinux/$name.fc",
     }
 
     file { "/etc/selinux/local/$name/$name.if": 
@@ -76,7 +76,7 @@ define selinux::module () {
 	owner => root, 
 	group => root, 
 	mode => 640,
-        source => "puppet://$servername/local/selinux/$name.if",
+        source => "puppet://$servername/dist/selinux/$name.if",
     }
 
     exec { "SELinux-$name-Update":
