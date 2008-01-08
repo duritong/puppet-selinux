@@ -101,7 +101,9 @@ define selinux::loadmodule ($location) {
                 command     => "/usr/sbin/semodule -u $location",
                 subscribe   => File["$location"],
                 refreshonly => true,
-                require     => [ File["/etc/selinux/strict/modules/active/modules/$name.pp"], File["$location"] ]
+                #require     => [ File["/etc/selinux/strict/modules/active/modules/$name.pp"], File["$location"] ]
+                require     => File["$location"],
+                onlyif => "defined(File['/etc/selinux/strict/modules/active/modules/$name.pp'])"
     }
 
 }
