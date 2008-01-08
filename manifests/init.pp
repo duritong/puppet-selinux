@@ -103,7 +103,7 @@ define selinux::loadmodule ($location) {
                 refreshonly => true,
                 #require     => [ File["/etc/selinux/strict/modules/active/modules/$name.pp"], File["$location"] ]
                 require     => File["$location"],
-                onlyif => "defined(File['/etc/selinux/strict/modules/active/modules/$name.pp'])"
+                onlyif => "File['/etc/selinux/strict/modules/active/modules/$name.pp']"
     }
 
 }
