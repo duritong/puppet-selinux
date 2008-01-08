@@ -94,7 +94,7 @@ define selinux::loadmodule ($location) {
     exec { "SELinux-$name-Install":
                 command     => "/usr/sbin/semodule -i $location",
 		creates	    => "/etc/selinux/strict/modules/active/modules/$name.pp",
-                require     => File["$location"],
+                #require     => File["$location"],
                 #onlyif => "test ! -e /etc/selinux/strict/modules/active/modules/$name.pp"
     }
 	# updates, if $location is refreshed and module already active
