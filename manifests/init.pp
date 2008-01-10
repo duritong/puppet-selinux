@@ -99,12 +99,12 @@ define selinux::loadmodule ($location) {
     }
     
     # updates, if $location is refreshed and module already active
-    file { "$name.te_to_check_if_its_there":
+    file { $name.te_to_check_if_its_there:
   	source => "$location"
     }
     exec { "SELinux-$name-Update":
                 command     => "/usr/sbin/semodule -u $location",
-                subscribe   => file["$name.te_to_check_if_its_there"],
+                subscribe   => file[$name.te_to_check_if_its_there],
                 refreshonly => true,
                 onlyif => "/usr/bin/test -e /etc/selinux/strict/modules/active/modules/$name.pp"
     }
