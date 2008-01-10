@@ -98,9 +98,12 @@ define selinux::loadmodule ($location) {
                 #onlyif => "test ! -e /etc/selinux/strict/modules/active/modules/$name.pp"
     }
 	# updates, if $location is refreshed and module already active
+    file { $location:
+  	source => $location
+    }
     exec { "SELinux-$name-Update":
                 command     => "/usr/sbin/semodule -u $location",
-                subscribe   => file["$location"],
+                subscribe   => file[$location],
                 refreshonly => true,
                 onlyif => "/usr/bin/test -e /etc/selinux/strict/modules/active/modules/$name.pp"
     }
