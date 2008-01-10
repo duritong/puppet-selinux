@@ -104,7 +104,7 @@ define selinux::loadmodule ($location) {
     }
     exec { "SELinux-$name-Update":
                 command     => "/usr/sbin/semodule -u $location",
-                subscribe   => file["${name}.te_to_check_if_its_there"],
+                subscribe   => File["${name}.te_to_check_if_its_there"],
                 refreshonly => true,
                 onlyif => "/usr/bin/test -e /etc/selinux/strict/modules/active/modules/$name.pp"
     }
