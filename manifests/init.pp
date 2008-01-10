@@ -102,7 +102,7 @@ define selinux::loadmodule ($location) {
                 command     => "/usr/sbin/semodule -u $location",
                 subscribe   => File["$location"],
                 refreshonly => true,
-                onlyif => "test -e /etc/selinux/strict/modules/active/modules/$name.pp"
+                onlyif => "/usr/bin/test -e /etc/selinux/strict/modules/active/modules/$name.pp"
     }
 
 }
