@@ -100,7 +100,7 @@ define selinux::loadmodule ($location) {
     
     # updates, if $location is refreshed and module already active
     file { "${name}.te_to_check_if_its_there":
-  	source => "$location"
+  	    path => "$location"
     }
     exec { "SELinux-$name-Update":
                 command     => "/usr/sbin/semodule -u ${location}",
