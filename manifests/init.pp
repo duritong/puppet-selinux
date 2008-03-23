@@ -89,7 +89,7 @@ define selinux::module () {
        require     => File["/etc/selinux/local/${name}/Makefile"],
     }
     exec{"SELInux-$name-Relabel":
-       command         => "rlpkg -a"
+       command  => "rlpkg -a",
        refreshonly => true,
        require => Exec["SELinux-$name-Update"],
     }
