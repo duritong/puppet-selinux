@@ -23,19 +23,19 @@ class selinux {
         group => "0",
         mode  => 755,
         ensure => present,
-	source => "puppet://$servername/selinux/s0",
+	    source => "puppet://$servername/selinux/s0",
     }
     file { '/usr/local/sbin/s1':
         owner => "root",
         group => "0",
         mode  => 755,
         ensure => present,
-	source => "puppet://$servername/selinux/s1",
+	    source => "puppet://$servername/selinux/s1",
     }
 
     class deenforce {
-	Exec { path => "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" }
-	exec { "/usr/local/sbin/s0": }
+	    Exec { path => "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" }
+    	exec { "/usr/local/sbin/s0": }
     }
 
     munin::plugin::deploy { "selinuxenforced": }
@@ -53,50 +53,56 @@ define selinux::module () {
         owner   => "root",
         group   => "root",
         mode    => "0750",
-	source => "puppet://$servername/selinux/Makefile",
+	    source => "puppet://$servername/selinux/Makefile",
     }
 
     file { "/etc/selinux/local/$name/${name}.te": 
-	ensure => file, 
-	owner => root, 
-	group => root, 
-	mode => 640,
+    	ensure => file, 
+	    owner => root, 
+    	group => root, 
+	    mode => 640,
         source => "puppet://$servername/dist/selinux/$name.te",
+        notify => Exec["SELinux-$name-Update"],
     }
 
     file { "/etc/selinux/local/$name/${name}.fc": 
-	ensure => file, 
-	owner => root, 
-	group => root, 
-	mode => 640,
+    	ensure => file, 
+	    owner => root, 
+    	group => root, 
+	    mode => 640,
         source => "puppet://$servername/dist/selinux/${name}.fc",
+        notify => [ Exec["SELinux-$name-Update"], Exec["SELInux-$name-Relabel"] ],
     }
 
     file { "/etc/selinux/local/${name}/${name}.if": 
-	ensure => file, 
-	owner => root, 
-	group => root, 
-	mode => 640,
+    	ensure => file, 
+	    owner => root, 
+    	group => root, 
+	    mode => 640,
         source => "puppet://$servername/dist/selinux/${name}.if",
+        notify => Exec["SELinux-$name-Update"],
     }
 
     exec { "SELinux-$name-Update":
-                command         => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
-                refreshonly => true,
-                require     => File["/etc/selinux/local/${name}/Makefile"],
-                subscribe       => File["/etc/selinux/local/${name}/${name}.te"],
+       command         => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
+       refreshonly => true,
+       require     => File["/etc/selinux/local/${name}/Makefile"],
     }
-
+    exec{"SELInux-$name-Relabel":
+       command         => "rlpkg -a"
+       refreshonly => true,
+       require => Exec["SELinux-$name-Update"],
+    }
 }
 
 # location = location of the pp (eg. /usr/share/selinux/strict/logrotate.pp)
 define selinux::loadmodule ($location) {
     # installs the module, if it is no already installed
     exec { "SELinux-${name}-Install":
-                command     => "/usr/sbin/semodule -i ${location}",
+        command     => "/usr/sbin/semodule -i ${location}",
 		creates	    => "/etc/selinux/strict/modules/active/modules/${name}.pp",
-                #require     => File["$location"],
-                #onlyif => "test ! -e /etc/selinux/strict/modules/active/modules/$name.pp"
+        #require     => File["$location"],
+        #onlyif => "test ! -e /etc/selinux/strict/modules/active/modules/$name.pp"
     }
     
     # updates, if $location is refreshed and module already active
@@ -104,10 +110,10 @@ define selinux::loadmodule ($location) {
   	    path => "$location"
     }
     exec { "SELinux-$name-Update":
-                command     => "/usr/sbin/semodule -u ${location}",
-                subscribe   => File["${name}.te_to_check_if_its_there"],
-                refreshonly => true,
-                onlyif => "/usr/bin/test -e /etc/selinux/strict/modules/active/modules/${name}.pp"
+        command     => "/usr/sbin/semodule -u ${location}",
+        subscribe   => File["${name}.te_to_check_if_its_there"],
+        refreshonly => true,
+        onlyif => "/usr/bin/test -e /etc/selinux/strict/modules/active/modules/${name}.pp"
     }
 }
 
