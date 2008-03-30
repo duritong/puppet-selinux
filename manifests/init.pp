@@ -38,7 +38,7 @@ class selinux {
     	exec { "/usr/local/sbin/s0": }
     }
 
-    munin::plugin::deploy { "selinuxenforced": }
+    include munin::plugins::selinux
 }
 
 define selinux::module () {
