@@ -11,31 +11,19 @@ class selinux {
         mode   => "0750",
     }
 
-    file { '/usr/local/bin/s0':
-        ensure => absent,
-    }
-    file { '/usr/local/bin/s1':
-        ensure => absent,
-    }
-
     file { '/usr/local/sbin/s0':
         owner => "root",
         group => "0",
-        mode  => 755,
+        mode  => 700,
         ensure => present,
-	    source => "puppet://$servername/selinux/s0",
+	    source => "puppet://$servername/selinux/sbin/s0",
     }
     file { '/usr/local/sbin/s1':
         owner => "root",
         group => "0",
-        mode  => 755,
+        mode  => 700,
         ensure => present,
-	    source => "puppet://$servername/selinux/s1",
-    }
-
-    class deenforce {
-	    Exec { path => "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" }
-    	exec { "/usr/local/sbin/s0": }
+	    source => "puppet://$servername/selinux/sbin/s1",
     }
 
     include munin::plugins::selinux
@@ -61,17 +49,21 @@ define selinux::module () {
 	    owner => root, 
     	group => root, 
 	    mode => 640,
-        source => "puppet://$servername/dist/selinux/$name.te",
-        notify => Exec["SELinux-$name-Update"],
+        source => [ "puppet://$servername/files/selinux/${fqdn}/${name}.te",
+                    "puppet://$servername/files/selinux/${name}.te",
+                    "puppet://$servername/selinux/module/${name}.te" ],
+        notify => Exec["SELinux-${name}-Update"],
     }
 
-    file { "/etc/selinux/local/$name/${name}.fc": 
+    file { "/etc/selinux/local/${name}/${name}.fc": 
     	ensure => file, 
 	    owner => root, 
     	group => root, 
 	    mode => 640,
-        source => "puppet://$servername/dist/selinux/${name}.fc",
-        notify => [ Exec["SELinux-$name-Update"], Exec["SELInux-$name-Relabel"] ],
+        source => [ "puppet://$servername/files/selinux/${fqdn}/${name}.fc",
+                    "puppet://$servername/files/selinux/${name}.fc",
+                    "puppet://$servername/selinux/module/${name}.fc" ],
+        notify => [ Exec["SELinux-${name}-Update"], Exec["SELInux-${name}-Relabel"] ],
     }
 
     file { "/etc/selinux/local/${name}/${name}.if": 
@@ -79,19 +71,21 @@ define selinux::module () {
 	    owner => root, 
     	group => root, 
 	    mode => 640,
-        source => "puppet://$servername/dist/selinux/${name}.if",
-        notify => Exec["SELinux-$name-Update"],
+        source => [ "puppet://$servername/files/selinux/${fqdn}/${name}.if",
+                    "puppet://$servername/files/selinux/${name}.if",
+                    "puppet://$servername/selinux/module/${name}.if" ],
+        notify => Exec["SELinux-${name}-Update"],
     }
 
-    exec { "SELinux-$name-Update":
+    exec { "SELinux-${name}-Update":
        command         => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
        refreshonly => true,
        require     => File["/etc/selinux/local/${name}/Makefile"],
     }
-    exec{"SELInux-$name-Relabel":
+    exec{"SELInux-${name}-Relabel":
        command  => "rlpkg -a",
        refreshonly => true,
-       require => Exec["SELinux-$name-Update"],
+       require => Exec["SELinux-${name}-Update"],
     }
 }
 
@@ -109,7 +103,7 @@ define selinux::loadmodule ($location) {
     file { "${name}.te_to_check_if_its_there":
   	    path => "$location"
     }
-    exec { "SELinux-$name-Update":
+    exec { "SELinux-${name}-Update":
         command     => "/usr/sbin/semodule -u ${location}",
         subscribe   => File["${name}.te_to_check_if_its_there"],
         refreshonly => true,
