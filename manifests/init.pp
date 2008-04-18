@@ -30,11 +30,13 @@ class selinux {
 }
 
 define selinux::module () {
+    include selinux
 
     file { "/etc/selinux/local/$name":
         ensure => directory,
         owner  => "root",
         group  => "root", mode   => "0750",
+        require => File["/etc/selinux/local"],
     }
     file { "/etc/selinux/local/$name/Makefile":
         ensure  => present,
@@ -42,6 +44,7 @@ define selinux::module () {
         group   => "root",
         mode    => "0750",
 	    source => "puppet://$servername/selinux/Makefile",
+        require => File["/etc/selinux/local/$name"],
     }
 
     file { "/etc/selinux/local/$name/${name}.te": 
@@ -53,6 +56,7 @@ define selinux::module () {
                     "puppet://$servername/files/selinux/${name}.te",
                     "puppet://$servername/selinux/module/${name}.te" ],
         notify => Exec["SELinux-${name}-Update"],
+        require => File["/etc/selinux/local/$name"],
     }
 
     file { "/etc/selinux/local/${name}/${name}.fc": 
@@ -64,6 +68,7 @@ define selinux::module () {
                     "puppet://$servername/files/selinux/${name}.fc",
                     "puppet://$servername/selinux/module/${name}.fc" ],
         notify => [ Exec["SELinux-${name}-Update"], Exec["SELInux-${name}-Relabel"] ],
+        require => File["/etc/selinux/local/$name"],
     }
 
     file { "/etc/selinux/local/${name}/${name}.if": 
@@ -75,6 +80,7 @@ define selinux::module () {
                     "puppet://$servername/files/selinux/${name}.if",
                     "puppet://$servername/selinux/module/${name}.if" ],
         notify => Exec["SELinux-${name}-Update"],
+        require => File["/etc/selinux/local/$name"],
     }
 
     exec { "SELinux-${name}-Update":
@@ -94,7 +100,7 @@ define selinux::loadmodule ($location) {
     # installs the module, if it is no already installed
     exec { "SELinux-${name}-Install":
         command     => "/usr/sbin/semodule -i ${location}",
-		creates	    => "/etc/selinux/strict/modules/active/modules/${name}.pp",
+		creates	    => "/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp",
         #require     => File["$location"],
         #onlyif => "test ! -e /etc/selinux/strict/modules/active/modules/$name.pp"
     }
@@ -107,7 +113,7 @@ define selinux::loadmodule ($location) {
         command     => "/usr/sbin/semodule -u ${location}",
         subscribe   => File["${name}.te_to_check_if_its_there"],
         refreshonly => true,
-        onlyif => "/usr/bin/test -e /etc/selinux/strict/modules/active/modules/${name}.pp"
+        onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
     }
 }
 
