@@ -1,5 +1,6 @@
 # modules/selinux/manifests/init.pp - manage selinux
 # Copyright (C) 2007 admin@immerda.ch
+# adapted by Puzzle ITC - haerry+puppet(at)puzzle.ch
 # 
 
 class selinux {
@@ -116,4 +117,3 @@ define selinux::loadmodule ($location) {
         onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
     }
 }
-
