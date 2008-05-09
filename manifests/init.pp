@@ -97,23 +97,35 @@ define selinux::module () {
 }
 
 # location = location of the pp (eg. /usr/share/selinux/strict/logrotate.pp)
-define selinux::loadmodule ($location) {
+define selinux::loadmodule ($location = '') {
     # installs the module, if it is no already installed
     exec { "SELinux-${name}-Install":
         command     => "/usr/sbin/semodule -i ${location}",
 		creates	    => "/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp",
-        #require     => File["$location"],
-        #onlyif => "test ! -e /etc/selinux/strict/modules/active/modules/$name.pp"
+    }
+
+    if $require {
+        Exec["SELinux-${name}-Install"]{
+            require +> $require,
+        }
     }
     
     # updates, if $location is refreshed and module already active
     file { "${name}.te_to_check_if_its_there":
-  	    path => "$location"
+  	    path => $location ? {
+                    '' => "/usr/share/selinux/${selinux_mode}/$name.pp",
+                    default => $location
+                }
     }
     exec { "SELinux-${name}-Update":
         command     => "/usr/sbin/semodule -u ${location}",
         subscribe   => File["${name}.te_to_check_if_its_there"],
         refreshonly => true,
         onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
+    }
+    if $require {
+        Exec["SELinux-${name}-Update"]{
+            require +> $require,
+        }
     }
 }
