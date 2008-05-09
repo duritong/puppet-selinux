@@ -1,0 +1,24 @@
+# selinux module
+# admin+puppetmodule@immerda.ch
+# GPLv3
+# Credits for ideas go to:
+# - Boone Bradley
+# - David Goldsmith
+# - Frank Sweeter
+
+This module is used to manage selinux stuff. Currently we mainly 
+use it to manage selinux stuff on gentoo, however there are as well
+some funtions for other distros.
+
+ToDo: Use native puppet types, when they will be integrated
+
+# defines
+
+# define selinux::loadmodule ($location) 
+
+location = location of the pp (eg. /usr/share/selinux/strict/logrotate.pp)
+this one is used to load certain modules
+
+# selinux::module
+
+use this function to deploy a certain module, it is identified by $name
