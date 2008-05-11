@@ -75,7 +75,7 @@ define selinux::module () {
         source => [ "puppet://$server/files/selinux/${fqdn}/${name}.fc",
                     "puppet://$server/files/selinux/${name}.fc",
                     "puppet://$server/selinux/module/${name}.fc" ],
-        notify => [ Exec["SELinux-${name}-Update"], Exec["SELInux-Relabel"] ],
+        notify => [ Exec["SELinux-${name}-Update"], Exec["SELinux-Relabel"] ],
         require => File["/etc/selinux/local/$name"],
     }
 
