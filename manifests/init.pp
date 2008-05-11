@@ -27,7 +27,7 @@ class selinux {
 	    source => "puppet://$server/selinux/sbin/s1",
     }
 
-    exec{"SELInux-Relabel":
+    exec{"SELinux-Relabel":
        command  => "rlpkg -a",
        refreshonly => true,
     }
