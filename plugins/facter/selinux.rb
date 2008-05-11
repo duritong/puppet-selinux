@@ -37,6 +37,6 @@ end
 Facter.add("selinux_mode") do
     confine :selinux => :true
     setcode do
-        %x{/usr/sbin/sestatus | /bin/grep "Policy from config file:" | awk '{print $5}'}        
+        %x{/usr/sbin/sestatus | /bin/grep "Policy from config file:" | awk '{print $5}'}.chomp 
     end
 end
