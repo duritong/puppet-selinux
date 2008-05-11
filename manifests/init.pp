@@ -27,7 +27,14 @@ class selinux {
 	    source => "puppet://$server/selinux/sbin/s1",
     }
 
-    include munin::plugins::selinux
+    exec{"SELInux-Relabel":
+       command  => "rlpkg -a",
+       refreshonly => true,
+    }
+
+    if $use_munin {
+        include munin::plugins::selinux
+    }
 }
 
 define selinux::module () {
@@ -68,7 +75,7 @@ define selinux::module () {
         source => [ "puppet://$server/files/selinux/${fqdn}/${name}.fc",
                     "puppet://$server/files/selinux/${name}.fc",
                     "puppet://$server/selinux/module/${name}.fc" ],
-        notify => [ Exec["SELinux-${name}-Update"], Exec["SELInux-${name}-Relabel"] ],
+        notify => [ Exec["SELinux-${name}-Update"], Exec["SELInux-Relabel"] ],
         require => File["/etc/selinux/local/$name"],
     }
 
@@ -85,22 +92,24 @@ define selinux::module () {
     }
 
     exec { "SELinux-${name}-Update":
-       command         => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
-       refreshonly => true,
-       require     => File["/etc/selinux/local/${name}/Makefile"],
+        command         => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
+        refreshonly => true,
+        require     => File["/etc/selinux/local/${name}/Makefile"],
+        before => Exec["SELinux-Relabel"],
     }
-    exec{"SELInux-${name}-Relabel":
-       command  => "rlpkg -a",
-       refreshonly => true,
-       require => Exec["SELinux-${name}-Update"],
-    }
+
 }
 
 # location = location of the pp (eg. /usr/share/selinux/strict/logrotate.pp)
 define selinux::loadmodule ($location = '') {
+    $real_location = $location ? {
+        '' => "/usr/share/selinux/${selinux_mode}/${name}.pp",
+        default => $location
+    }
+
     # installs the module, if it is no already installed
     exec { "SELinux-${name}-Install":
-        command     => "/usr/sbin/semodule -i ${location}",
+        command     => "/usr/sbin/semodule -i ${real_location}",
 		creates	    => "/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp",
     }
 
@@ -110,15 +119,12 @@ define selinux::loadmodule ($location = '') {
         }
     }
     
-    # updates, if $location is refreshed and module already active
+    # updates, if $real_location is refreshed and module already active
     file { "${name}.te_to_check_if_its_there":
-  	    path => $location ? {
-                    '' => "/usr/share/selinux/${selinux_mode}/$name.pp",
-                    default => $location
-                }
+  	    path => $real_location
     }
     exec { "SELinux-${name}-Update":
-        command     => "/usr/sbin/semodule -u ${location}",
+        command     => "/usr/sbin/semodule -u ${real_location}",
         subscribe   => File["${name}.te_to_check_if_its_there"],
         refreshonly => true,
         onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
