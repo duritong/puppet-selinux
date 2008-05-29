@@ -60,9 +60,14 @@ define selinux::module () {
 	    owner => root, 
     	group => root, 
 	    mode => 640,
-        source => [ "puppet://$server/files/selinux/${fqdn}/${name}.te",
+        source => [ 
+                    "puppet://$server/files/selinux/${fqdn}/${name}/${name}.te",
+                    "puppet://$server/files/selinux/${fqdn}/${name}.te",
+                    "puppet://$server/files/selinux/${name}/${name}.te",
                     "puppet://$server/files/selinux/${name}.te",
-                    "puppet://$server/selinux/module/${name}.te" ],
+                    "puppet://$server/selinux/module/${name}/${name}.te",
+                    "puppet://$server/selinux/module/${name}.te" 
+                  ],
         notify => Exec["SELinux-${name}-Update"],
         require => File["/etc/selinux/local/$name"],
     }
@@ -72,9 +77,14 @@ define selinux::module () {
 	    owner => root, 
     	group => root, 
 	    mode => 640,
-        source => [ "puppet://$server/files/selinux/${fqdn}/${name}.fc",
+        source => [ 
+                    "puppet://$server/files/selinux/${fqdn}/${name}/${name}.fc",
+                    "puppet://$server/files/selinux/${fqdn}/${name}.fc",
+                    "puppet://$server/files/selinux/${name}/${name}.fc",
                     "puppet://$server/files/selinux/${name}.fc",
-                    "puppet://$server/selinux/module/${name}.fc" ],
+                    "puppet://$server/selinux/module/${name}/${name}.fc" 
+                    "puppet://$server/selinux/module/${name}.fc" 
+                  ],
         notify => [ Exec["SELinux-${name}-Update"], Exec["SELinux-Relabel"] ],
         require => File["/etc/selinux/local/$name"],
     }
@@ -84,9 +94,14 @@ define selinux::module () {
 	    owner => root, 
     	group => root, 
 	    mode => 640,
-        source => [ "puppet://$server/files/selinux/${fqdn}/${name}.if",
+        source => [ 
+                    "puppet://$server/files/selinux/${fqdn}/${name}/${name}.if",
+                    "puppet://$server/files/selinux/${fqdn}/${name}.if",
+                    "puppet://$server/files/selinux/${name}/${name}.if",
                     "puppet://$server/files/selinux/${name}.if",
-                    "puppet://$server/selinux/module/${name}.if" ],
+                    "puppet://$server/selinux/module/${name}/${name}.if",
+                    "puppet://$server/selinux/module/${name}.if" 
+                  ],
         notify => Exec["SELinux-${name}-Update"],
         require => File["/etc/selinux/local/$name"],
     }
