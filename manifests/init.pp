@@ -82,7 +82,7 @@ define selinux::module () {
                     "puppet://$server/files/selinux/${fqdn}/${name}.fc",
                     "puppet://$server/files/selinux/${name}/${name}.fc",
                     "puppet://$server/files/selinux/${name}.fc",
-                    "puppet://$server/selinux/module/${name}/${name}.fc" 
+                    "puppet://$server/selinux/module/${name}/${name}.fc",
                     "puppet://$server/selinux/module/${name}.fc" 
                   ],
         notify => [ Exec["SELinux-${name}-Update"], Exec["SELinux-Relabel"] ],
