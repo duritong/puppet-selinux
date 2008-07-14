@@ -184,3 +184,28 @@ define selinux::loadmodule ($location = '') {
         }
     }
 }
+
+define selinux::strictpermissive () {
+    include selinux
+
+    file { "/etc/selinux/config":
+        owner => "root",
+        group => "0",
+        mode  => 444,
+        ensure => present,
+	    source => "puppet://$server/selinux/config_strict_permissive",
+    }
+}
+
+define selinux::strictenforcing () {
+    include selinux
+
+    file { "/etc/selinux/config":
+        owner => "root",
+        group => "0",
+        mode  => 444,
+        ensure => present,
+	    source => "puppet://$server/selinux/config_strict_enforcing",
+    }
+}
+
