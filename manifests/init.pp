@@ -14,6 +14,10 @@
 
 class selinux {
 
+    case $operatingsystem {
+            centos: { include selinux::centos }
+    }
+
     file { "/etc/selinux/local":
         ensure => directory,
         owner  => "root",
@@ -37,12 +41,27 @@ class selinux {
     }
 
     exec{"SELinux-Relabel":
-       command  => "rlpkg -a",
+       command => $operatingsystem ? {
+                     debian => "rlpkg -a",
+                     centos => "/bin/true"
+       },
        refreshonly => true,
     }
 
     if $use_munin {
         include munin::plugins::selinux
+    }
+}
+
+class selinux::centos {
+    # yum install selinux-policy-strict setools
+    package { 'selinux-policy-strict':
+        name => 'selinux-policy-strict',
+        ensure => present,
+    }
+    package { 'setools':
+        name => 'setools',
+        ensure => present,
     }
 }
 
@@ -55,12 +74,18 @@ define selinux::module () {
         group  => "root", mode   => "0750",
         require => File["/etc/selinux/local"],
     }
+
     file { "/etc/selinux/local/$name/Makefile":
         ensure  => present,
         owner   => "root",
         group   => "root",
         mode    => "0750",
-	    source => "puppet://$server/selinux/Makefile",
+	    source =>   [
+                    "puppet://$server/files/selinux/${fqdn}/${name}/Makefile",
+                    "puppet://$server/files/selinux/${name}/Makefile",
+                    "puppet://$server/selinux/module/Makefile" 
+                    "puppet://$server/selinux/Makefile",
+                    ],
         require => File["/etc/selinux/local/$name"],
     }
 
