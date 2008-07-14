@@ -84,7 +84,7 @@ define selinux::module () {
                     "puppet://$server/files/selinux/${fqdn}/${name}/Makefile",
                     "puppet://$server/files/selinux/${name}/Makefile",
                     "puppet://$server/selinux/module/Makefile",
-                    "puppet://$server/selinux/Makefile",
+                    "puppet://$server/selinux/Makefile"
                     ],
         require => File["/etc/selinux/local/$name"],
     }
