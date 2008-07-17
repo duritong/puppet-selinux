@@ -67,6 +67,7 @@ class selinux::centos {
 
 define selinux::module () {
     include selinux
+    include make
 
     file { "/etc/selinux/local/$name":
         ensure => directory,
