@@ -151,38 +151,53 @@ define selinux::module () {
 }
 
 # location = location of the pp (eg. /usr/share/selinux/strict/logrotate.pp)
-define selinux::loadmodule ($location = '') {
+define selinux::loadmodule ($location = '',$ensure='present', $requireabsenceof='') {
     $real_location = $location ? {
         '' => "/usr/share/selinux/${selinux_mode}/${name}.pp",
         default => $location
     }
 
-    # installs the module, if it is no already installed
-    exec { "SELinux-${name}-Install":
-        command     => "/usr/sbin/semodule -i ${real_location}",
-		creates	    => "/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp",
-    }
+    case $ensure {
+    present: {
+        # installs the module, if it is no already installed
+        exec { "SELinux-${name}-Install":
+            command     => "/usr/sbin/semodule -i ${real_location}",
+		    creates	    => "/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp",
+        }
 
-    if $require {
-        Exec["SELinux-${name}-Install"]{
-            require +> $require,
+        if $require {
+            Exec["SELinux-${name}-Install"]{
+                require +> $require,
+            }
         }
-    }
     
-    # updates, if $real_location is refreshed and module already active
-    file { "${name}.te_to_check_if_its_there":
-  	    path => $real_location
-    }
-    exec { "SELinux-${name}-Update":
-        command     => "/usr/sbin/semodule -u ${real_location}",
-        subscribe   => File["${name}.te_to_check_if_its_there"],
-        refreshonly => true,
-        onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
-    }
-    if $require {
-        Exec["SELinux-${name}-Update"]{
-            require +> $require,
+        # updates, if $real_location is refreshed and module already active
+        file { "${name}.te_to_check_if_its_there":
+  	        path => $real_location
         }
+        exec { "SELinux-${name}-Update":
+            command     => "/usr/sbin/semodule -u ${real_location}",
+            subscribe   => File["${name}.te_to_check_if_its_there"],
+            refreshonly => true,
+            onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
+        }
+        if $require {
+            Exec["SELinux-${name}-Update"]{
+                require +> $require,
+            }
+        }
+    }  # end ensure present
+    absent: {
+        exec { "SELinux-${name}-Remove":
+            command     => "/usr/sbin/semodule -r ${name}",
+            onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
+        }
+        if $requireabsenceof {
+            Exec["SELinux-${name}-Remove"]{
+                require +> Exec["SELinux-${requireabsenceof}-Remove"],
+            }
+        }
+    }  # end ensure absent
     }
 }
 
