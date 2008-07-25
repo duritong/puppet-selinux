@@ -146,7 +146,7 @@ define selinux::module () {
         refreshonly => true,
         require     => File["/etc/selinux/local/${name}/Makefile"],
         before => Exec["SELinux-Relabel"],
-        return => 2,
+        returns => 2,
     }
 
     # should load the module again, if "accidently" removed with semodule -r modulename
@@ -154,7 +154,7 @@ define selinux::module () {
         command         => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
         creates     => File["/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"],
         before => Exec["SELinux-Relabel"],
-        return => 2,
+        returns => 2,
     }
 
 }
