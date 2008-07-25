@@ -150,12 +150,12 @@ define selinux::module () {
     }
 
     # should load the module again, if "accidently" removed with semodule -r modulename
-    exec { "SELinux-${name}-Update_indep":
-        command         => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
-        creates     => file["/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"],
-        before => Exec["SELinux-Relabel"],
-        returns => 2,
-    }
+#    exec { "SELinux-${name}-Update_indep":
+#        command         => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
+#        creates     => file["/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"],
+#        before => Exec["SELinux-Relabel"],
+#        returns => 2,
+#    }
 
 }
 
