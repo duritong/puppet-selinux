@@ -7,9 +7,9 @@ Facter.add("selinux") do
     confine :kernel => :linux
 
     setcode do 
-	    result = "false"
+	    result = false
         if FileTest.exists?("/selinux/enforce")
-            result = "true"
+            result = true
         end
         result
     end
@@ -19,9 +19,9 @@ Facter.add("selinux_enforced") do
     confine :selinux => :true
 
     setcode do
-    	result = "false"
+    	result = false
         if FileTest.exists?("/selinux/enforce") and File.read("/selinux/enforce") =~ /1/i
-            result = "true"
+            result = true
         end
         result
     end
