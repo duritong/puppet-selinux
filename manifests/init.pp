@@ -6,9 +6,9 @@
 # Marcel Härry haerry+puppet(at)puzzle.ch
 # Simon Josi josi+puppet(at)puzzle.ch
 #
-# This program is free software; you can redistribute 
-# it and/or modify it under the terms of the GNU 
-# General Public License version 3 as published by 
+# This program is free software; you can redistribute
+# it and/or modify it under the terms of the GNU
+# General Public License version 3 as published by
 # the Free Software Foundation.
 #
 
@@ -20,30 +20,24 @@ class selinux {
 
     file { "/etc/selinux/local":
         ensure => directory,
-        owner  => "root",
-        group  => "root",
-        mode   => "0750",
+        owner  => root, group  => 0, mode => 0750;
     }
 
     file { '/usr/local/sbin/s0':
-        owner => "root",
-        group => "0",
-        mode  => 700,
         ensure => present,
-	    source => "puppet://$server/selinux/sbin/s0",
+        source => "puppet://$server/selinux/sbin/s0",
+        owner => root, group => 0, mode  => 700;
     }
     file { '/usr/local/sbin/s1':
-        owner => "root",
-        group => "0",
-        mode  => 700,
         ensure => present,
-	    source => "puppet://$server/selinux/sbin/s1",
+        source => "puppet://$server/selinux/sbin/s1",
+        owner => root, group => 0, mode  => 700;
     }
 
     exec{"SELinux-Relabel":
-       command => $operatingsystem ? {
-                     debian => "rlpkg -a",
-                     centos => "/bin/true"
+        command => $operatingsystem ? {
+            debian => "rlpkg -a",
+            centos => "/bin/true"
        },
        refreshonly => true,
     }
@@ -71,81 +65,69 @@ define selinux::module () {
 
     file { "/etc/selinux/local/$name":
         ensure => directory,
-        owner  => "root",
-        group  => "root", mode   => "0750",
-        require => File["/etc/selinux/local"],
+        require => File['/etc/selinux/local'],
+        owner  => root, group  => 0, mode   => 0750;
     }
 
     file { "/etc/selinux/local/$name/Makefile":
-        ensure  => present,
-        owner   => "root",
-        group   => "root",
-        mode    => "0750",
-	    source =>   [
+	      source =>   [
                     "puppet://$server/files/selinux/${fqdn}/${name}/Makefile",
                     "puppet://$server/files/selinux/${name}/Makefile",
                     "puppet://$server/selinux/module/Makefile",
                     "puppet://$server/selinux/Makefile"
                     ],
         require => File["/etc/selinux/local/$name"],
+        owner   => root, group   => 0, mode    => 0750;
     }
 
-    file { "/etc/selinux/local/$name/${name}.te": 
-    	ensure => file, 
-	    owner => root, 
-    	group => root, 
-	    mode => 640,
-        source => [ 
+    file { "/etc/selinux/local/$name/${name}.te":
+        source => [
                     "puppet://$server/files/selinux/${fqdn}/${name}/${name}.te",
                     "puppet://$server/files/selinux/${fqdn}/${name}.te",
                     "puppet://$server/files/selinux/${name}/${name}.te",
                     "puppet://$server/files/selinux/${name}.te",
                     "puppet://$server/selinux/module/${name}/${name}.te",
-                    "puppet://$server/selinux/module/${name}.te" 
+                    "puppet://$server/selinux/module/${name}.te"
                   ],
         notify => Exec["SELinux-${name}-Update"],
         require => File["/etc/selinux/local/$name"],
+        owner => root, group => 0, mode => 640;
     }
 
-    file { "/etc/selinux/local/${name}/${name}.fc": 
-    	ensure => file, 
-	    owner => root, 
-    	group => root, 
-	    mode => 640,
-        source => [ 
+    file { "/etc/selinux/local/${name}/${name}.fc":
+        source => [
                     "puppet://$server/files/selinux/${fqdn}/${name}/${name}.fc",
                     "puppet://$server/files/selinux/${fqdn}/${name}.fc",
                     "puppet://$server/files/selinux/${name}/${name}.fc",
                     "puppet://$server/files/selinux/${name}.fc",
                     "puppet://$server/selinux/module/${name}/${name}.fc",
-                    "puppet://$server/selinux/module/${name}.fc" 
+                    "puppet://$server/selinux/module/${name}.fc"
                   ],
-        notify => [ Exec["SELinux-${name}-Update"], Exec["SELinux-Relabel"] ],
+        notify => [ Exec["SELinux-${name}-Update"], Exec['SELinux-Relabel'] ],
         require => File["/etc/selinux/local/$name"],
+	      owner => root, group => 0, mode => 640;
     }
 
-    file { "/etc/selinux/local/${name}/${name}.if": 
-    	ensure => file, 
-	    owner => root, 
-    	group => root, 
-	    mode => 640,
-        source => [ 
+    file { "/etc/selinux/local/${name}/${name}.if":
+        ensure => file,
+        source => [
                     "puppet://$server/files/selinux/${fqdn}/${name}/${name}.if",
                     "puppet://$server/files/selinux/${fqdn}/${name}.if",
                     "puppet://$server/files/selinux/${name}/${name}.if",
                     "puppet://$server/files/selinux/${name}.if",
                     "puppet://$server/selinux/module/${name}/${name}.if",
-                    "puppet://$server/selinux/module/${name}.if" 
+                    "puppet://$server/selinux/module/${name}.if"
                   ],
         notify => Exec["SELinux-${name}-Update"],
         require => File["/etc/selinux/local/$name"],
+	      owner => root, group => 0, mode => 640;
     }
 
     exec { "SELinux-${name}-Update":
-        command         => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
+        command => "/usr/bin/make -C /etc/selinux/local/${name} -f /etc/selinux/local/${name}/Makefile load",
         refreshonly => true,
-        require     => File["/etc/selinux/local/${name}/Makefile"],
-        before => Exec["SELinux-Relabel"],
+        require => File["/etc/selinux/local/${name}/Makefile"],
+        before => Exec['SELinux-Relabel'],
         returns => 2,
     }
 
@@ -167,46 +149,46 @@ define selinux::loadmodule ($location = '',$ensure='present', $requireabsenceof=
     }
 
     case $ensure {
-    present: {
-        # installs the module, if it is no already installed
-        exec { "SELinux-${name}-Install":
-            command     => "/usr/sbin/semodule -i ${real_location}",
-		    creates	    => "/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp",
-        }
+        present: {
+            # installs the module, if it is no already installed
+            exec { "SELinux-${name}-Install":
+                command     => "/usr/sbin/semodule -i ${real_location}",
+                creates	    => "/etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp",
+            }
 
-        if $require {
-            Exec["SELinux-${name}-Install"]{
-                require +> $require,
+            if $require {
+                Exec["SELinux-${name}-Install"]{
+                    require +> $require,
+                }
             }
-        }
-    
-        # updates, if $real_location is refreshed and module already active
-        file { "${name}.te_to_check_if_its_there":
-  	        path => $real_location
-        }
-        exec { "SELinux-${name}-Update":
-            command     => "/usr/sbin/semodule -u ${real_location}",
-            subscribe   => File["${name}.te_to_check_if_its_there"],
-            refreshonly => true,
-            onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
-        }
-        if $require {
-            Exec["SELinux-${name}-Update"]{
-                require +> $require,
+
+            # updates, if $real_location is refreshed and module already active
+            file { "${name}.te_to_check_if_its_there":
+                path => $real_location
             }
-        }
-    }  # end ensure present
-    absent: {
-        exec { "SELinux-${name}-Remove":
-            command     => "/usr/sbin/semodule -r ${name}",
-            onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
-        }
-        if $requireabsenceof {
-            Exec["SELinux-${name}-Remove"]{
-                require +> Exec["SELinux-${requireabsenceof}-Remove"],
+            exec { "SELinux-${name}-Update":
+                command     => "/usr/sbin/semodule -u ${real_location}",
+                subscribe   => File["${name}.te_to_check_if_its_there"],
+                refreshonly => true,
+                onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
             }
-        }
-    }  # end ensure absent
+            if $require {
+                Exec["SELinux-${name}-Update"]{
+                    require +> $require,
+                }
+            }
+        }  # end ensure present
+        absent: {
+            exec { "SELinux-${name}-Remove":
+                command     => "/usr/sbin/semodule -r ${name}",
+                onlyif => "/usr/bin/test -e /etc/selinux/${selinux_mode}/modules/active/modules/${name}.pp"
+            }
+            if $requireabsenceof {
+                Exec["SELinux-${name}-Remove"]{
+                    require +> Exec["SELinux-${requireabsenceof}-Remove"],
+                }
+            }
+        }  # end ensure absent
     }
 }
 
@@ -214,11 +196,9 @@ define selinux::strictpermissive () {
     include selinux
 
     file { "/etc/selinux/config":
-        owner => "root",
-        group => "0",
-        mode  => 444,
-        ensure => present,
-	    source => "puppet://$server/selinux/config_strict_permissive",
+      ensure => present,
+      source => "puppet://$server/selinux/config_strict_permissive",
+      owner => root, group => 0, mode  => 444;
     }
 }
 
@@ -226,11 +206,9 @@ define selinux::strictenforcing () {
     include selinux
 
     file { "/etc/selinux/config":
-        owner => "root",
-        group => "0",
-        mode  => 444,
-        ensure => present,
-	    source => "puppet://$server/selinux/config_strict_enforcing",
+      ensure => present,
+      source => "puppet://$server/selinux/config_strict_enforcing",
+      owner => root, group => 0, mode  => 444;
     }
 }
 

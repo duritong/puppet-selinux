@@ -6,18 +6,18 @@
 
 # disable selinux stuff
 class selinux::disable {
-
     case $operatingsystem {
         centos: { include selinux::disable::centos }
     }
-
 }
 
 class selinux::disable::centos {
+
     service{restorecond:
         ensure => stopped,
         enable => false,
     }
+
     service{mcstrans:
         ensure => stopped,
         enable => false,
