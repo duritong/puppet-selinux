@@ -18,23 +18,23 @@ class selinux {
             centos: { include selinux::centos }
     }
 
-    file { "/etc/selinux/local":
+    file {'/etc/selinux/local':
         ensure => directory,
-        owner  => root, group  => 0, mode => 0750;
+        owner  => root, group => 0, mode => 0750;
     }
 
-    file { '/usr/local/sbin/s0':
+    file {'/usr/local/sbin/s0':
         ensure => present,
         source => "puppet://$server/selinux/sbin/s0",
         owner => root, group => 0, mode  => 700;
     }
-    file { '/usr/local/sbin/s1':
+    file {'/usr/local/sbin/s1':
         ensure => present,
         source => "puppet://$server/selinux/sbin/s1",
         owner => root, group => 0, mode  => 700;
     }
 
-    exec{"SELinux-Relabel":
+    exec{'SELinux-Relabel':
         command => $operatingsystem ? {
             debian => "rlpkg -a",
             centos => "/bin/true"
@@ -66,7 +66,7 @@ define selinux::module () {
     file { "/etc/selinux/local/$name":
         ensure => directory,
         require => File['/etc/selinux/local'],
-        owner  => root, group  => 0, mode   => 0750;
+        owner => root, group => 0, mode => 0750;
     }
 
     file { "/etc/selinux/local/$name/Makefile":
@@ -77,7 +77,7 @@ define selinux::module () {
                     "puppet://$server/selinux/Makefile"
                     ],
         require => File["/etc/selinux/local/$name"],
-        owner   => root, group   => 0, mode    => 0750;
+        owner => root, group => 0, mode => 0750;
     }
 
     file { "/etc/selinux/local/$name/${name}.te":
