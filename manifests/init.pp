@@ -43,7 +43,7 @@ class selinux {
     }
 
     if $use_munin {
-        include munin::plugins::selinux
+        include ::munin::plugins::selinux
     }
 }
 
@@ -60,8 +60,8 @@ class selinux::centos {
 }
 
 define selinux::module () {
-    include selinux
-    include make
+    include ::selinux
+    include ::make
 
     file { "/etc/selinux/local/$name":
         ensure => directory,
@@ -193,7 +193,7 @@ define selinux::loadmodule ($location = '',$ensure='present', $requireabsenceof=
 }
 
 define selinux::strictpermissive () {
-    include selinux
+    include ::selinux
 
     file { "/etc/selinux/config":
       ensure => present,
@@ -203,7 +203,7 @@ define selinux::strictpermissive () {
 }
 
 define selinux::strictenforcing () {
-    include selinux
+    include ::selinux
 
     file { "/etc/selinux/config":
       ensure => present,
