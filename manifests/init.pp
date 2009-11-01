@@ -25,12 +25,12 @@ class selinux {
 
     file {'/usr/local/sbin/s0':
         ensure => present,
-        source => "puppet://$server/selinux/sbin/s0",
+        source => "puppet://$server/modules/selinux/sbin/s0",
         owner => root, group => 0, mode  => 700;
     }
     file {'/usr/local/sbin/s1':
         ensure => present,
-        source => "puppet://$server/selinux/sbin/s1",
+        source => "puppet://$server/modules/selinux/sbin/s1",
         owner => root, group => 0, mode  => 700;
     }
 
@@ -73,8 +73,8 @@ define selinux::module () {
 	      source =>   [
                     "puppet://$server/files/selinux/${fqdn}/${name}/Makefile",
                     "puppet://$server/files/selinux/${name}/Makefile",
-                    "puppet://$server/selinux/module/Makefile",
-                    "puppet://$server/selinux/Makefile"
+                    "puppet://$server/modules/selinux/module/Makefile",
+                    "puppet://$server/modules/selinux/Makefile"
                     ],
         require => File["/etc/selinux/local/$name"],
         owner => root, group => 0, mode => 0750;
@@ -86,8 +86,8 @@ define selinux::module () {
                     "puppet://$server/files/selinux/${fqdn}/${name}.te",
                     "puppet://$server/files/selinux/${name}/${name}.te",
                     "puppet://$server/files/selinux/${name}.te",
-                    "puppet://$server/selinux/module/${name}/${name}.te",
-                    "puppet://$server/selinux/module/${name}.te"
+                    "puppet://$server/modules/selinux/module/${name}/${name}.te",
+                    "puppet://$server/modules/selinux/module/${name}.te"
                   ],
         notify => Exec["SELinux-${name}-Update"],
         require => File["/etc/selinux/local/$name"],
@@ -100,8 +100,8 @@ define selinux::module () {
                     "puppet://$server/files/selinux/${fqdn}/${name}.fc",
                     "puppet://$server/files/selinux/${name}/${name}.fc",
                     "puppet://$server/files/selinux/${name}.fc",
-                    "puppet://$server/selinux/module/${name}/${name}.fc",
-                    "puppet://$server/selinux/module/${name}.fc"
+                    "puppet://$server/modules/selinux/module/${name}/${name}.fc",
+                    "puppet://$server/modules/selinux/module/${name}.fc"
                   ],
         notify => [ Exec["SELinux-${name}-Update"], Exec['SELinux-Relabel'] ],
         require => File["/etc/selinux/local/$name"],
@@ -115,8 +115,8 @@ define selinux::module () {
                     "puppet://$server/files/selinux/${fqdn}/${name}.if",
                     "puppet://$server/files/selinux/${name}/${name}.if",
                     "puppet://$server/files/selinux/${name}.if",
-                    "puppet://$server/selinux/module/${name}/${name}.if",
-                    "puppet://$server/selinux/module/${name}.if"
+                    "puppet://$server/modules/selinux/module/${name}/${name}.if",
+                    "puppet://$server/modules/selinux/module/${name}.if"
                   ],
         notify => Exec["SELinux-${name}-Update"],
         require => File["/etc/selinux/local/$name"],
@@ -197,7 +197,7 @@ define selinux::strictpermissive () {
 
     file { "/etc/selinux/config":
       ensure => present,
-      source => "puppet://$server/selinux/config_strict_permissive",
+      source => "puppet://$server/modules/selinux/config_strict_permissive",
       owner => root, group => 0, mode  => 444;
     }
 }
@@ -207,7 +207,7 @@ define selinux::strictenforcing () {
 
     file { "/etc/selinux/config":
       ensure => present,
-      source => "puppet://$server/selinux/config_strict_enforcing",
+      source => "puppet://$server/modules/selinux/config_strict_enforcing",
       owner => root, group => 0, mode  => 444;
     }
 }
