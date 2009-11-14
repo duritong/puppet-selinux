@@ -71,8 +71,8 @@ define selinux::module () {
 
     file { "/etc/selinux/local/$name/Makefile":
 	      source =>   [
-                    "puppet://$server/files/selinux/${fqdn}/${name}/Makefile",
-                    "puppet://$server/files/selinux/${name}/Makefile",
+                    "puppet://$server/modules/site-selinux/${fqdn}/${name}/Makefile",
+                    "puppet://$server/modules/site-selinux/${name}/Makefile",
                     "puppet://$server/modules/selinux/module/Makefile",
                     "puppet://$server/modules/selinux/Makefile"
                     ],
@@ -82,10 +82,10 @@ define selinux::module () {
 
     file { "/etc/selinux/local/$name/${name}.te":
         source => [
-                    "puppet://$server/files/selinux/${fqdn}/${name}/${name}.te",
-                    "puppet://$server/files/selinux/${fqdn}/${name}.te",
-                    "puppet://$server/files/selinux/${name}/${name}.te",
-                    "puppet://$server/files/selinux/${name}.te",
+                    "puppet://$server/modules/site-selinux/${fqdn}/${name}/${name}.te",
+                    "puppet://$server/modules/site-selinux/${fqdn}/${name}.te",
+                    "puppet://$server/modules/site-selinux/${name}/${name}.te",
+                    "puppet://$server/modules/site-selinux/${name}.te",
                     "puppet://$server/modules/selinux/module/${name}/${name}.te",
                     "puppet://$server/modules/selinux/module/${name}.te"
                   ],
@@ -96,10 +96,10 @@ define selinux::module () {
 
     file { "/etc/selinux/local/${name}/${name}.fc":
         source => [
-                    "puppet://$server/files/selinux/${fqdn}/${name}/${name}.fc",
-                    "puppet://$server/files/selinux/${fqdn}/${name}.fc",
-                    "puppet://$server/files/selinux/${name}/${name}.fc",
-                    "puppet://$server/files/selinux/${name}.fc",
+                    "puppet://$server/modules/site-selinux/${fqdn}/${name}/${name}.fc",
+                    "puppet://$server/modules/site-selinux/${fqdn}/${name}.fc",
+                    "puppet://$server/modules/site-selinux/${name}/${name}.fc",
+                    "puppet://$server/modules/site-selinux/${name}.fc",
                     "puppet://$server/modules/selinux/module/${name}/${name}.fc",
                     "puppet://$server/modules/selinux/module/${name}.fc"
                   ],
@@ -111,10 +111,10 @@ define selinux::module () {
     file { "/etc/selinux/local/${name}/${name}.if":
         ensure => file,
         source => [
-                    "puppet://$server/files/selinux/${fqdn}/${name}/${name}.if",
-                    "puppet://$server/files/selinux/${fqdn}/${name}.if",
-                    "puppet://$server/files/selinux/${name}/${name}.if",
-                    "puppet://$server/files/selinux/${name}.if",
+                    "puppet://$server/modules/site-selinux/${fqdn}/${name}/${name}.if",
+                    "puppet://$server/modules/site-selinux/${fqdn}/${name}.if",
+                    "puppet://$server/modules/site-selinux/${name}/${name}.if",
+                    "puppet://$server/modules/site-selinux/${name}.if",
                     "puppet://$server/modules/selinux/module/${name}/${name}.if",
                     "puppet://$server/modules/selinux/module/${name}.if"
                   ],
