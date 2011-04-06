@@ -1,9 +1,0 @@
-#!/bin/bash
-echo -n "es war   : "
-cat /selinux/enforce
-echo
-setenforce 0
-echo -n "und jetzt: "
-cat /selinux/enforce
-echo
-
