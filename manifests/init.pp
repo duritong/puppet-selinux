@@ -16,7 +16,7 @@ class selinux {
   case $operatingsystem {
     centos: { include selinux::centos }
   }
-
+  
   if $use_munin {
     include ::munin::plugins::selinux
   }
