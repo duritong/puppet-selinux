@@ -1,5 +1,5 @@
-class selinux::setroublehoot::disable {
+class selinux::setroubleshoot::disable {
   case $operatingsystem {
-    centos: { include selinux::setroublehoot::disable::centos }
+    centos: { include selinux::setroubleshoot::disable::centos }
   }  
 }
