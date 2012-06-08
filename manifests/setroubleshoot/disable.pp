@@ -1,5 +1,5 @@
 class selinux::setroubleshoot::disable {
-  case $operatingsystem {
+  case $::operatingsystem {
     centos: { include selinux::setroubleshoot::disable::centos }
-  }  
+  }
 }

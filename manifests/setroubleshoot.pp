@@ -1,5 +1,5 @@
 class selinux::setroubleshoot {
-  case $operatingsystem {
+  case $::operatingsystem {
     centos: { include selinux::setroubleshoot::centos }
   }
 }

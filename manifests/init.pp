@@ -13,11 +13,11 @@
 #
 
 class selinux {
-  case $operatingsystem {
+  case $::operatingsystem {
     centos: { include selinux::centos }
   }
-  
-  if $use_munin {
+
+  if hiera('use_munin',false) {
     include ::munin::plugins::selinux
   }
 }
