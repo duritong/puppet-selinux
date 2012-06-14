@@ -12,12 +12,14 @@
 # the Free Software Foundation.
 #
 
-class selinux {
+class selinux ( 
+  $manage_munin = false
+) {
   case $::operatingsystem {
     centos: { include selinux::centos }
   }
 
-  if hiera('use_munin',false) {
+  if $manage_munin {
     include ::munin::plugins::selinux
   }
 }
