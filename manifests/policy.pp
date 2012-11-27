@@ -43,6 +43,10 @@ define selinux::policy(
                     "puppet:///modules/site_selinux/policies/${name}/${name}.fc",
                   ],
       }
+    } else {
+      File["${selinux::policy::base::dir}/${name}/${name}.fc"]{
+        ensure => present,
+      }
     }
 
     exec{
