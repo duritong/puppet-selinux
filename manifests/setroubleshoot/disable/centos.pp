@@ -1,19 +1,16 @@
 # remove setroubleshoot-server on centos
-class selinux::setroubleshoot::disable::centos inherits selinux::setroubleshoot::centos {
+class selinux::setroubleshoot::disable::centos {
   if $::lsbmajdistrelease < 6 {
-    Service['setroubleshoot']{
+    service{'setroubleshoot':
       ensure  => stopped,
       enable  => false,
       require => undef,
-      before  => Package['setroubleshoot-server'],
+      before  => Exec['remove-setroubleshoot-server'];
     }
   }
 
-  exec{'yum -y remove setroubleshoot-plugins':
-    onlyif => 'rpm -qi setroubleshoot-plugins',
-    before => Package['setroubleshoot-server'],
-  }
-  Package['setroubleshoot-server']{
-    ensure => absent,
+  exec{'remove-setroubleshoot-server':
+    command => 'yum -y remove setroubleshoot-plugins',
+    onlyif  => 'rpm -qi setroubleshoot-plugins',
   }
 }
