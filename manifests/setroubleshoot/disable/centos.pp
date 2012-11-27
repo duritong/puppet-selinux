@@ -8,6 +8,11 @@ class selinux::setroubleshoot::disable::centos inherits selinux::setroubleshoot:
       before  => Package['setroubleshoot-server'],
     }
   }
+
+  exec{'yum remove setroubleshoot-plugins':
+    onlyif => 'rpm -qi setroubleshoot-plugins',
+    before => Package['setroubleshoot-server'],
+  }
   Package['setroubleshoot-server']{
     ensure => absent,
   }
