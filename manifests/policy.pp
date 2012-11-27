@@ -56,7 +56,7 @@ define selinux::policy(
         cwd         => "${selinux::policy::base::dir}/${name}",
         notify      => Exec["load_${name}_policy"];
       "load_${name}_policy":
-        command     => "semodule -u ${selinux::policy::base::dir}/${name}/${name}.pp",
+        command     => "semodule -i ${selinux::policy::base::dir}/${name}/${name}.pp",
         refreshonly => true;
     }
   } else {
