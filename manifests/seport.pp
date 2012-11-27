@@ -16,6 +16,5 @@ define selinux::seport(
   }
   exec{"semanage port ${cli_action} -t ${setype} -p ${protocol} ${port}":
     unless  => "semanage port -l | grep -i ${setype} | grep -qE '${protocol}[ ]+([0-9, ]+)? ${port}'",
-    require => Package['setroubleshoot-server'],
   }
 }

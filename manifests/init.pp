@@ -12,14 +12,19 @@
 # the Free Software Foundation.
 #
 
-class selinux ( 
-  $manage_munin = false
+# base class to manage a few selinux related things
+class selinux (
+  $manage_munin   = false,
+  $setroubleshoot = false
 ) {
-  case $::operatingsystem {
-    centos: { include selinux::centos }
-  }
 
   if $manage_munin {
     include ::munin::plugins::selinux
+  }
+
+  if $setroubleshoot {
+    include selinux::setroubleshoot
+  } elsif $setroubleshoot == 'absent' {
+    include selinux::setroubleshoot::disable
   }
 }
