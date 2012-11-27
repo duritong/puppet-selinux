@@ -9,7 +9,7 @@ class selinux::setroubleshoot::disable::centos inherits selinux::setroubleshoot:
     }
   }
 
-  exec{'yum remove setroubleshoot-plugins':
+  exec{'yum -y remove setroubleshoot-plugins':
     onlyif => 'rpm -qi setroubleshoot-plugins',
     before => Package['setroubleshoot-server'],
   }
