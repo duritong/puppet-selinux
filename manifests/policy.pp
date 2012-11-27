@@ -6,7 +6,7 @@
 #  * fc_file: true/*false* - Does this policy have a fc file?
 define selinux::policy(
   $ensure  = 'present',
-  $fc_file = false,
+  $fc_file = false
 ) {
 
   require selinux::policy::base
