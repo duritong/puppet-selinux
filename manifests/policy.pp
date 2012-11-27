@@ -49,7 +49,7 @@ define selinux::policy(
       }
     }
 
-    exce{
+    exec{
       "make_${name}_policy":
         command     => 'make',
         refreshonly => true,
