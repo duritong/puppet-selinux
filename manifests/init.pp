@@ -22,9 +22,9 @@ class selinux (
     include ::munin::plugins::selinux
   }
 
-  if $setroubleshoot {
-    include selinux::setroubleshoot
-  } elsif $setroubleshoot == 'absent' {
+  if $setroubleshoot == 'absent' {
     include selinux::setroubleshoot::disable
+  } elsif $setroubleshoot {
+    include selinux::setroubleshoot
   }
 }
