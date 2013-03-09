@@ -5,8 +5,16 @@
 #  * ensure: *present*/absent
 #  * fc_file: true/*false* - Does this policy have a fc file?
 define selinux::policy(
-  $ensure  = 'present',
-  $fc_file = false
+  $ensure     = 'present',
+  $fc_file    = false,
+  $te_source  =  [
+    "puppet:///modules/site_selinux/policies/${name}/${::fqdn}/${name}.te",
+    "puppet:///modules/site_selinux/policies/${name}/${name}.te",
+  ],
+  $fc_source  = [
+    "puppet:///modules/site_selinux/policies/${name}/${::fqdn}/${name}.fc",
+    "puppet:///modules/site_selinux/policies/${name}/${name}.fc",
+  ]
 ) {
 
   require selinux::policy::base
@@ -27,10 +35,7 @@ define selinux::policy(
     }
     file{
       "${selinux::policy::base::dir}/${name}/${name}.te":
-        source => [
-                    "puppet:///modules/site_selinux/policies/${name}/${::fqdn}/${name}.te",
-                    "puppet:///modules/site_selinux/policies/${name}/${name}.te",
-                  ];
+        source => $te_source;
       "${selinux::policy::base::dir}/${name}/${name}.fc":;
       "${selinux::policy::base::dir}/${name}/Makefile":
         ensure => link,
@@ -38,10 +43,7 @@ define selinux::policy(
     }
     if $fc_file {
       File["${selinux::policy::base::dir}/${name}/${name}.fc"]{
-        source => [
-                    "puppet:///modules/site_selinux/policies/${name}/${::fqdn}/${name}.fc",
-                    "puppet:///modules/site_selinux/policies/${name}/${name}.fc",
-                  ],
+        source => $fc_source,
       }
     } else {
       File["${selinux::policy::base::dir}/${name}/${name}.fc"]{
