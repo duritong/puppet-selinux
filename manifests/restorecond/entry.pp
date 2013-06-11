@@ -1,4 +1,5 @@
-class selinux::restorecond::entry(
+# manages an entry in restorecond
+define selinux::restorecond::entry(
   $ensure = 'present'
 ){
   include selinux::restorecond
