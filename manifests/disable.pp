@@ -6,7 +6,9 @@
 
 # disable selinux stuff
 class selinux::disable {
-    case $::operatingsystem {
-        centos: { include selinux::disable::centos }
-    }
+  file_line{'manage_selinux_sysconfig':
+    line  => "SELINUX=disabled",
+    match => '^SELINUX=',
+    file  => '/etc/selinux/config',
+  }
 }

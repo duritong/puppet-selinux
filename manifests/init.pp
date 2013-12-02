@@ -13,10 +13,24 @@
 #
 
 # base class to manage a few selinux related things
+#
+# Parameters:
+#
+#  * mode: Mode of selinux: enforcing/permissive
+#  * manage_munin: Munin plugins?
+#  * setroubleshoot: setroubleshoot server?
+#
 class selinux (
+  $mode           = 'enforcing',
   $manage_munin   = false,
-  $setroubleshoot = false
+  $setroubleshoot = false,
 ) {
+
+  file_line{'manage_selinux_sysconfig':
+    line  => "SELINUX=${mode}",
+    match => '^SELINUX=',
+    file  => '/etc/selinux/config',
+  }
 
   if $manage_munin {
     include ::munin::plugins::selinux
