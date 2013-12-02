@@ -29,7 +29,7 @@ class selinux (
   file_line{'manage_selinux_sysconfig':
     line  => "SELINUX=${mode}",
     match => '^SELINUX=',
-    file  => '/etc/selinux/config',
+    path  => '/etc/selinux/config',
   }
 
   if $manage_munin {

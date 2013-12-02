@@ -9,6 +9,6 @@ class selinux::disable {
   file_line{'manage_selinux_sysconfig':
     line  => "SELINUX=disabled",
     match => '^SELINUX=',
-    file  => '/etc/selinux/config',
+    path  => '/etc/selinux/config',
   }
 }
