@@ -16,7 +16,7 @@
 #
 # Parameters:
 #
-#  * mode: Mode of selinux: enforcing/permissive
+#  * mode: Mode of selinux: enforcing/permissive/disabled
 #  * manage_munin: Munin plugins?
 #  * setroubleshoot: setroubleshoot server?
 #
@@ -32,13 +32,15 @@ class selinux (
     path  => '/etc/selinux/config',
   }
 
-  if $manage_munin {
-    include ::munin::plugins::selinux
-  }
+  if $mode != 'disabled' {
+    if $manage_munin {
+      include ::munin::plugins::selinux
+    }
 
-  if $setroubleshoot == 'absent' {
-    include selinux::setroubleshoot::disable
-  } elsif $setroubleshoot {
-    include selinux::setroubleshoot
+    if $setroubleshoot == 'absent' {
+      include selinux::setroubleshoot::disable
+    } elsif $setroubleshoot {
+      include selinux::setroubleshoot
+    }
   }
 }
